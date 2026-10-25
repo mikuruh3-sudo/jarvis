@@ -139,8 +139,9 @@ footer{text-align:center;color:#577e93;font-size:10px;padding-top:12px}
   } finally {
     $('coreState').textContent = 'STANDBY';
     status.textContent = 'SYSTEM ONLINE · READY FOR INPUT';
-  }
-})();
+ 　 }
+　})();
+});
   $('voice').addEventListener('click', () => {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) { addMessage('このSafari環境では音声認識が利用できない場合があります。キーボードのマイクによる音声入力をお試しください。'); return; }
