@@ -129,8 +129,18 @@ footer{text-align:center;color:#577e93;font-size:10px;padding-top:12px}
   $('form').addEventListener('submit', e => {
     e.preventDefault(); const text=input.value.trim(); if(!text) return;
     addMessage(text,'user'); input.value=''; $('coreState').textContent='PROCESSING'; status.textContent='PROCESSING REQUEST…';
-    setTimeout(() => { const response=replyTo(text); addMessage(response); say(response); $('coreState').textContent='STANDBY'; status.textContent='SYSTEM ONLINE · READY FOR INPUT'; }, 250);
-  });
+    (async () => {
+  try {
+    const response = await askJarvis(text);
+    addMessage(response);
+    say(response);
+  } catch (error) {
+    addMessage('接続エラー：' + error.message);
+  } finally {
+    $('coreState').textContent = 'STANDBY';
+    status.textContent = 'SYSTEM ONLINE · READY FOR INPUT';
+  }
+})();
   $('voice').addEventListener('click', () => {
     const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!Recognition) { addMessage('このSafari環境では音声認識が利用できない場合があります。キーボードのマイクによる音声入力をお試しください。'); return; }
