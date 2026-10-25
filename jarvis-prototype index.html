@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#020812">
+<title>J.A.R.V.I.S. | Personal Interface</title>
+<style>
+:root{--cyan:#42dfff;--blue:#168bff;--deep:#020812;--panel:rgba(5,23,43,.82);--muted:#86aabd}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 20%,#08294a 0,#03101f 38%,#01040b 78%);color:#e4f8ff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:.02em}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;opacity:.18;background-image:linear-gradient(rgba(66,223,255,.12) 1px,transparent 1px),linear-gradient(90deg,rgba(66,223,255,.12) 1px,transparent 1px);background-size:34px 34px;mask-image:linear-gradient(to bottom,black,transparent)}
+main{width:min(760px,100%);margin:auto;padding:22px 16px calc(28px + env(safe-area-inset-bottom));position:relative}
+header{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid #1c6686;padding:4px 0 14px}
+.brand{font-size:clamp(20px,5vw,29px);font-weight:800;letter-spacing:.18em;color:#d9f8ff;text-shadow:0 0 18px #168bff}
+.sub{font-size:10px;color:var(--muted);letter-spacing:.17em;margin-top:5px}
+.pill{border:1px solid #168bff;border-radius:99px;padding:6px 10px;color:#69e9ff;font-size:10px;white-space:nowrap}
+.hud{display:grid;place-items:center;padding:24px 0 18px}
+.core{width:min(68vw,265px);aspect-ratio:1;position:relative;display:grid;place-items:center;filter:drop-shadow(0 0 14px #087acb)}
+.core:before,.core:after,.ring{content:"";position:absolute;border-radius:50%;border:1px solid rgba(66,223,255,.72)}
+.core:before{inset:3%;border-width:2px;border-style:dashed;animation:spin 28s linear infinite}
+.core:after{inset:13%;border:3px double #2ebdff;box-shadow:inset 0 0 25px #087acb,0 0 22px #087acb}
+.ring.r1{inset:21%;border:2px solid #5beaff;border-left-color:transparent;border-right-color:transparent;animation:spin 5s linear infinite}
+.ring.r2{inset:29%;border:1px dashed #168bff;animation:backspin 12s linear infinite}
+.ring.r3{inset:37%;border:1px solid rgba(66,223,255,.6);box-shadow:0 0 20px #168bff,inset 0 0 20px #168bff}
+.center{position:relative;z-index:2;text-align:center;color:#b9f7ff;text-shadow:0 0 14px #42dfff}
+.center strong{display:block;font-size:clamp(19px,5vw,26px);letter-spacing:.12em}
+.center small{display:block;margin-top:8px;font-size:9px;letter-spacing:.2em;color:#64bde2}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes backspin{to{transform:rotate(-360deg)}}
+.status{text-align:center;color:#6ceaff;font-size:11px;letter-spacing:.18em;margin:0 0 18px}
+.panel{border:1px solid #165b7a;background:var(--panel);border-radius:15px;padding:14px;box-shadow:inset 0 0 22px rgba(0,124,210,.08),0 8px 24px #0005;margin:12px 0}
+.panel-title{font-size:11px;color:#6ee8ff;letter-spacing:.15em;margin-bottom:10px}
+#chat{height:190px;overflow:auto;display:flex;flex-direction:column;gap:9px}
+.msg{font-size:14px;line-height:1.55;padding:10px 12px;border-radius:12px;max-width:92%;white-space:pre-wrap;overflow-wrap:anywhere}
+.bot{align-self:flex-start;background:#0a2942;border:1px solid #155d7d}
+.user{align-self:flex-end;background:#07395b;border:1px solid #168bff}
+small.meta{display:block;color:#77a8c1;font-size:9px;margin-bottom:3px}
+.compose{display:flex;gap:8px;margin-top:12px}
+input{min-width:0;flex:1;background:#020b17;border:1px solid #1c6486;color:#e4f8ff;border-radius:10px;padding:13px;font-size:15px;outline:none}
+button{border:1px solid #168bff;background:linear-gradient(135deg,#064777,#05233b);color:#dffaff;border-radius:10px;padding:11px 13px;font-weight:650;cursor:pointer}
+button:active{transform:scale(.98)}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions button{flex:1;font-size:12px;min-width:100px}
+.memory-item{border:1px solid #174f6b;background:#031321;padding:11px;border-radius:10px;margin-top:9px;font-size:13px;overflow-wrap:anywhere}
+.memory-actions{display:flex;gap:8px;margin-top:9px}
+.memory-actions button{flex:1}
+.danger{border-color:#92536a;background:#351321}
+footer{text-align:center;color:#577e93;font-size:10px;padding-top:12px}
+@media(min-width:600px){#chat{height:230px}.hud{padding:30px 0 22px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main>
+<header><div><div class="brand">J.A.R.V.I.S.</div><div class="sub">PERSONAL ASSISTANT INTERFACE</div></div><div class="pill" id="online">● SYSTEM READY</div></header>
+<section class="hud" aria-label="JARVIS HUD">
+  <div class="core"><i class="ring r1"></i><i class="ring r2"></i><i class="ring r3"></i><div class="center"><strong>JARVIS</strong><small id="coreState">STANDBY</small></div></div>
+</section>
+<div class="status" id="status">SYSTEM ONLINE · READY FOR INPUT</div>
+<section class="panel"><div class="panel-title">COMMUNICATION LOG / 会話</div><div id="chat" aria-live="polite"></div>
+<form id="form" class="compose"><input id="message" autocomplete="off" placeholder="ジャービスに指示する…" aria-label="メッセージ"><button type="submit">送信</button></form>
+<div class="actions" style="margin-top:9px"><button id="voice">🎙 音声入力</button><button id="speak">🔊 音声読み上げ ON/OFF</button><button id="clear">会話を消去</button></div>
+</section>
+<section class="panel"><div class="panel-title">MEMORY CORE / 記憶候補</div><div style="font-size:12px;color:#9ac2d6;line-height:1.6">「覚えておいて、私は朝型です」のように入力すると、保存候補を提示します。確認するまで記憶には追加されません。</div><div id="pending"></div><div id="memories"></div></section>
+<section class="panel"><div class="panel-title">SYSTEM NOTES / 試作版の制限</div><div style="font-size:12px;color:#9ac2d6;line-height:1.7">この試作は画面・会話UI・記憶確認の動作を確認するためのものです。AI APIやWeb検索には未接続です。記憶はこのブラウザ内に保存され、別端末には同期されません。</div></section>
+<footer>J.A.R.V.I.S. PROTOTYPE · LOCAL STORAGE · API KEY NOT USED</footer>
+</main>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const chat = $('chat'), input = $('message'), status = $('status');
+  const memoryKey = 'jarvis_memories_v1';
+  let speechOn = true, pendingMemory = null;
+  const loadMemories = () => { try { return JSON.parse(localStorage.getItem(memoryKey) || '[]'); } catch { return []; } };
+  const saveMemories = list => localStorage.setItem(memoryKey, JSON.stringify(list));
+  function addMessage(text, who='bot') {
+    const div = document.createElement('div'); div.className = 'msg ' + who;
+    const meta = document.createElement('small'); meta.className = 'meta'; meta.textContent = who === 'bot' ? 'J.A.R.V.I.S.' : 'YOU';
+    const body = document.createElement('div'); body.textContent = text;
+    div.append(meta, body); chat.append(div); chat.scrollTop = chat.scrollHeight;
+  }
+  function say(text) {
+    if (!speechOn || !('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'ja-JP'; utterance.rate = 0.94; utterance.pitch = 0.88;
+    window.speechSynthesis.speak(utterance);
+  }
+  function renderMemories() {
+    const list = loadMemories(), root = $('memories'); root.replaceChildren();
+    if (!list.length) { const p = document.createElement('div'); p.className='memory-item'; p.textContent='保存された記憶はまだありません。'; root.append(p); return; }
+    list.forEach((item, i) => {
+      const box = document.createElement('div'); box.className='memory-item';
+      const label = document.createElement('div'); label.textContent = '◆ ' + item;
+      const del = document.createElement('button'); del.className='danger'; del.textContent='削除'; del.style.marginTop='8px';
+      del.addEventListener('click', () => { const updated=loadMemories(); updated.splice(i,1); saveMemories(updated); renderMemories(); });
+      box.append(label, del); root.append(box);
+    });
+  }
+  function showCandidate(text) {
+    pendingMemory = text;
+    const root = $('pending'); root.replaceChildren();
+    const box = document.createElement('div'); box.className='memory-item';
+    const title = document.createElement('div'); title.textContent='次の内容を記憶に保存しますか？';
+    const content = document.createElement('p'); content.textContent='「' + text + '」';
+    const row = document.createElement('div'); row.className='memory-actions';
+    const yes = document.createElement('button'); yes.textContent='保存する';
+    const no = document.createElement('button'); no.className='danger'; no.textContent='保存しない';
+    yes.addEventListener('click', () => { const memories=loadMemories(); if (!memories.includes(text)) memories.push(text); saveMemories(memories); pendingMemory=null; root.replaceChildren(); renderMemories(); addMessage('承知しました。確認いただいた内容を記憶に保存しました。'); say('承知しました。記憶に保存しました。'); });
+    no.addEventListener('click', () => { pendingMemory=null; root.replaceChildren(); addMessage('承知しました。今回は保存しません。'); });
+    row.append(yes,no); box.append(title,content,row); root.append(box);
+  }
+  function replyTo(text) {
+    const lower = text.toLowerCase();
+    if (/覚えて|記憶して|記憶に保存/.test(text)) {
+      const candidate = text.replace(/^(ジャービス[、, ]*)?/,'').replace(/^(覚えておいて|覚えて|記憶しておいて|記憶して|記憶に保存して)[、：: ]*/,'').trim();
+      if (candidate) { showCandidate(candidate); return '記憶候補を作成しました。下の内容を確認してください。'; }
+      return '記憶したい内容を、「覚えておいて、私は朝型です」のようにお話しください。';
+    }
+    if (/こんにちは|こんばんは|おはよう/.test(text)) return 'こんにちは。J.A.R.V.I.S.です。ご用件をどうぞ。';
+    if (/何を覚えて|記憶一覧|覚えていること/.test(text)) {
+      const m=loadMemories(); return m.length ? '現在の記憶は次のとおりです。\n' + m.map((x,i)=>(i+1)+'. '+x).join('\n') : '保存された記憶はまだありません。必要な内容があれば、保存候補をご提案します。';
+    }
+    if (/ありがとう/.test(text)) return 'どういたしまして。お役に立てて何よりです。';
+    if (/検索|調べて|最新|天気/.test(text)) return 'この試作版ではWeb検索に接続していません。次の段階で、APIキーを公開しないサーバー経由の検索機能を追加できます。';
+    if (/誰|名前/.test(text)) return '私はJ.A.R.V.I.S.の試作アシスタントです。現在は基本機能の動作確認モードです。';
+    if (lower.includes('help') || text.includes('使い方')) return 'メッセージを入力して送信してください。記憶したい内容は「覚えておいて、…」と入力し、下に表示される候補を確認して保存できます。';
+    return '承知しました。現在は試作モードのため、会話の本格的な推論はまだ有効ではありません。次の段階でAIを安全に接続できます。';
+  }
+  $('form').addEventListener('submit', e => {
+    e.preventDefault(); const text=input.value.trim(); if(!text) return;
+    addMessage(text,'user'); input.value=''; $('coreState').textContent='PROCESSING'; status.textContent='PROCESSING REQUEST…';
+    setTimeout(() => { const response=replyTo(text); addMessage(response); say(response); $('coreState').textContent='STANDBY'; status.textContent='SYSTEM ONLINE · READY FOR INPUT'; }, 250);
+  });
+  $('voice').addEventListener('click', () => {
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition) { addMessage('このSafari環境では音声認識が利用できない場合があります。キーボードのマイクによる音声入力をお試しください。'); return; }
+    const recognition = new Recognition(); recognition.lang='ja-JP'; recognition.interimResults=false; recognition.maxAlternatives=1;
+    status.textContent='LISTENING…'; $('coreState').textContent='LISTENING';
+    recognition.onresult = e => { input.value=e.results[0][0].transcript; status.textContent='VOICE INPUT RECEIVED'; };
+    recognition.onerror = () => { status.textContent='VOICE INPUT UNAVAILABLE'; addMessage('音声認識を開始できませんでした。マイクの許可を確認するか、キーボード音声入力をお使いください。'); };
+    recognition.onend = () => { $('coreState').textContent='STANDBY'; if(status.textContent==='LISTENING…') status.textContent='SYSTEM ONLINE · READY FOR INPUT'; };
+    try { recognition.start(); } catch { addMessage('音声認識を開始できませんでした。少し待ってから再試行してください。'); }
+  });
+  $('speak').addEventListener('click', () => { speechOn=!speechOn; if(!speechOn && 'speechSynthesis' in window) window.speechSynthesis.cancel(); addMessage('音声読み上げ：' + (speechOn?'オン':'オフ')); });
+  $('clear').addEventListener('click', () => { chat.replaceChildren(); addMessage('会話表示を消去しました。保存済みの記憶は削除されていません。'); });
+  addMessage('システム起動完了。私はJ.A.R.V.I.S.の試作アシスタントです。ご用件をどうぞ。');
+  renderMemories();
+})();
+</script>
+</body>
+</html>
